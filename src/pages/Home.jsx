@@ -1,6 +1,11 @@
+import { useContext } from "react";
 import Tarefa from "../components/Tarefa";
+import { LoginContext } from "../contexts/LoginContext";
 
 const Home = () => {
+
+    const { logado } = useContext(LoginContext);
+
     return (
         <div>
             <header className="bg-slate-600 flex justify-between items-center py-4 px-[100px]">
@@ -13,9 +18,14 @@ const Home = () => {
                 <Tarefa />
                 <Tarefa />
             </div>
-            <div className="fixed bottom-8 right-8">
-                <button className="leading-[46px] bg-slate-500 text-white px-4 rounded font-semibold">Nova Tarefa</button>
-            </div>
+            {
+                logado && (
+                    <div className="fixed bottom-8 right-8">
+                        <button className="leading-[46px] bg-slate-500 text-white px-4 rounded font-semibold">Nova Tarefa</button>
+                    </div>
+                )
+            }
+
         </div>
     );
 }

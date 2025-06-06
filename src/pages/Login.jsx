@@ -18,6 +18,7 @@ const Login = () => {
         }
 
         if(dados.email == "gleidson@gmail.com" && dados.senha == "1234"){
+            sessionStorage.setItem("logado", true);
             setLogado(true);
             navigate("/");
         }else{

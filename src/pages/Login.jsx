@@ -9,22 +9,29 @@ const Login = () => {
     const { setLogado } = useContext(LoginContext);
     const navigate = useNavigate();
 
-    function logar(event){
+    function logar(event) {
         event.preventDefault();
-        
+
         let dados = {
             email: emailInput.current.value,
             senha: senhaInput.current.value
         }
 
-        if(dados.email == "gleidson@gmail.com" && dados.senha == "1234"){
-            sessionStorage.setItem("logado", true);
-            setLogado(true);
-            navigate("/");
-        }else{
-            alert("Email ou senha incorretos!")
-        }
-        
+        fetch("http://localhost:8000/login", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(dados)
+        })
+            .then(res => res.json())
+            .then(resposta => {
+                console.log(resposta);
+                sessionStorage.setItem("logado", true);
+                sessionStorage.setItem("usuario_id", resposta.usuario.id);
+                setLogado(true);
+                navigate("/");
+            })
     }
 
     return (

@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Tarefa from "../components/Tarefa";
 import { LoginContext } from "../contexts/LoginContext";
 
@@ -6,13 +6,25 @@ const Home = () => {
 
     const { logado, setLogado } = useContext(LoginContext);
     const [gaveta, setGaveta] = useState(false);
+    const [tarefas, setTarefas] = useState([]);
 
     const tituloRef = useRef();
     const descricaoRef = useRef();
 
     function logout() {
-        sessionStorage.removeItem("logado");
+        sessionStorage.clear();
         setLogado(false);
+    }
+
+    function buscarTarefas(){
+        const usuario_id = sessionStorage.getItem("usuario_id");
+        if(usuario_id){
+            fetch(`http://localhost:8000/tarefas-do-usuario/${usuario_id}`)
+            .then(res => res.json())
+            .then(resposta => {
+                console.log(resposta);
+            })
+        }
     }
 
     function criarTarefa() {
@@ -23,6 +35,10 @@ const Home = () => {
         }
         alert(JSON.stringify(tarefa));
     }
+
+    useEffect(() => {
+        buscarTarefas();
+    }, []);
 
     return (
         <div>

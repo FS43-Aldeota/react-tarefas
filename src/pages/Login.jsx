@@ -29,6 +29,7 @@ const Login = () => {
                 console.log(resposta);
                 sessionStorage.setItem("logado", true);
                 sessionStorage.setItem("usuario_id", resposta.usuario.id);
+                sessionStorage.setItem("usuario_nome", resposta.usuario.nome);
                 setLogado(true);
                 navigate("/");
             })

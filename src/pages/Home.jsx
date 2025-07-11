@@ -4,9 +4,12 @@ import { LoginContext } from "../contexts/LoginContext";
 
 const Home = () => {
 
+    const usuario_nome = sessionStorage.getItem("usuario_nome") || "";
+
     const { logado, setLogado } = useContext(LoginContext);
     const [gaveta, setGaveta] = useState(false);
     const [tarefas, setTarefas] = useState([]);
+
 
     const tituloRef = useRef();
     const descricaoRef = useRef();
@@ -22,18 +25,32 @@ const Home = () => {
             fetch(`http://localhost:8000/tarefas-do-usuario/${usuario_id}`)
             .then(res => res.json())
             .then(resposta => {
-                console.log(resposta);
+                setTarefas(resposta);
             })
         }
     }
 
     function criarTarefa() {
         event.preventDefault();
+        const usuario_id = sessionStorage.getItem("usuario_id");
         let tarefa = {
             titulo: tituloRef.current.value,
-            descricao: descricaoRef.current.value
+            descricao: descricaoRef.current.value,
+            usuario_id
         }
-        alert(JSON.stringify(tarefa));
+        fetch(`http://localhost:8000/tarefas`, {
+            method: "post",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(tarefa)
+        })
+        .then(res => res.json())
+        .then((resposta) => {
+            alert(resposta);
+            setGaveta(false);
+            buscarTarefas();
+        })
     }
 
     useEffect(() => {
@@ -46,22 +63,32 @@ const Home = () => {
                 <h1 className="text-white text-2xl">React Tarefas</h1>
                 {
                     logado ? (
-                        <button
-                            className="leading-[46px] bg-white px-4 rounded font-semibold"
-                            onClick={logout}
-                        >
-                            log out
-                        </button>
+                        <>
+                            <h2>{usuario_nome}</h2>
+                            <button
+                                className="leading-[46px] bg-white px-4 rounded font-semibold"
+                                onClick={logout}
+                            >
+                                log out
+                            </button>
+                        </>
                     ) : (
                         <a href="/login" className="leading-[46px] bg-white px-4 rounded font-semibold">Login</a>
                     )
                 }
             </header>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 py-8 px-[100px]">
-                <Tarefa />
-                <Tarefa />
-                <Tarefa />
-                <Tarefa />
+                {
+                    tarefas.map(tarefa => (
+                        <Tarefa 
+                            key={tarefa.id}
+                            id={tarefa.id}
+                            titulo={tarefa.titulo}
+                            descricao={tarefa.descricao}
+                            recarregar={() => buscarTarefas()}
+                        />
+                    ))
+                }
             </div>
             {
                 logado && (
